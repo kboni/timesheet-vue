@@ -1,0 +1,58 @@
+[
+    {
+        "id": "fce2812f.86741",
+        "type": "tab",
+        "label": "Timesheet",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "99c763b9.f26bf",
+        "type": "http in",
+        "z": "fce2812f.86741",
+        "name": "GET timesheet",
+        "url": "/timesheet",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 190,
+        "y": 200,
+        "wires": [
+            [
+                "a5e0e37b.27c72"
+            ]
+        ]
+    },
+    {
+        "id": "2a9ba1c3.66a8be",
+        "type": "http response",
+        "z": "fce2812f.86741",
+        "name": "Success",
+        "statusCode": "200",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "x": 640,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "a5e0e37b.27c72",
+        "type": "template",
+        "z": "fce2812f.86741",
+        "name": "Timesheet JSON",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "json",
+        "syntax": "plain",
+        "template": "{\n    \"timesheet\": []\n}",
+        "output": "json",
+        "x": 440,
+        "y": 200,
+        "wires": [
+            [
+                "2a9ba1c3.66a8be"
+            ]
+        ]
+    }
+]
