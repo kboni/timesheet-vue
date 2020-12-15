@@ -1,8 +1,8 @@
 export interface TimesheetResponse {
-    timesheetRows: TimesheetRows[]
+    timesheetRows: TimesheetRow[]
 }
 
-export interface TimesheetRows {
+export interface TimesheetRow {
     project: string,
     activity: string,
     hoursPerDay: HoursPerDay[]

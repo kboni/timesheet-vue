@@ -67,10 +67,10 @@
           </tr>
         </tbody>
       </table>
-      <button>Add row</button>
+      <button @click="addRow">Add row</button>
       <button>Delete selected row(s)</button>
       <button>Save</button>
-      <button>Reset to last saved</button>
+      <button @click="resetRows">Reset to last saved</button>
     </div>
   </div>
 </template>
@@ -79,7 +79,7 @@
 import { decrementDays, formatDateToString, getWeek, incrementDays } from "../utils/datetime";
 import { defineComponent } from "vue";
 import { getTimesheetResponse } from "../service/timesheet";
-import { TimesheetResponse, TimesheetRows } from "../models/timesheetResponse.interface";
+import { TimesheetResponse, TimesheetRow } from "../models/timesheetResponse.interface";
 import { AxiosResponse } from "axios";
 
 export default defineComponent({
@@ -89,7 +89,8 @@ export default defineComponent({
       todayDate: new Date(new Date().setHours(0, 0, 0, 1)),
       selectedDate: new Date(0),
       mondayInSelectedWeek: new Date(0),
-      timesheetRows: [] as TimesheetRows[]
+      timesheetRows: [] as TimesheetRow[],
+      originalTimesheetRows: [] as TimesheetRow[]
     };
   },
   methods: {
@@ -110,10 +111,21 @@ export default defineComponent({
       getTimesheetResponse(week)
       .then((response: AxiosResponse<TimesheetResponse>) => {
         this.timesheetRows = response.data.timesheetRows;
+        this.originalTimesheetRows = JSON.parse(JSON.stringify(this.timesheetRows));
       })
       .catch((err) => {
         console.log(err)
       })
+    },
+    addRow() {
+      this.timesheetRows.push({
+        project: '',
+        activity: '',
+        hoursPerDay: []
+      } as TimesheetRow);
+    },
+    resetRows() {
+      this.timesheetRows = JSON.parse(JSON.stringify(this.originalTimesheetRows));
     }
   },
   computed: {
