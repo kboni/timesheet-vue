@@ -45,7 +45,7 @@
         "fieldType": "msg",
         "format": "json",
         "syntax": "plain",
-        "template": "{\n    \"timesheet\": []\n}",
+        "template": "{\n    \"timesheetRows\": [\n        {\n            \"project\": \"Some Project\",\n            \"activity\": \"Some activity\",\n            \"hoursPerDay\": {\n                \"monday\": \"8:00\",\n                \"tuesday\": \"8:00\",\n                \"wednesday\": \"8:00\",\n                \"thursday\": \"8:00\",\n                \"friday\": \"8:00\"\n            }\n        },\n        {\n            \"project\": \"Some Project 1\",\n            \"activity\": \"Some activity 1\",\n            \"hoursPerDay\": {\n                \"monday\": \"8:00\",\n                \"tuesday\": \"8:00\",\n                \"wednesday\": \"8:00\",\n                \"thursday\": \"8:00\",\n                \"friday\": \"8:00\"\n            }\n        }\n    ]\n}",
         "output": "json",
         "x": 440,
         "y": 200,

@@ -29,7 +29,42 @@
           </tr>
         </thead>
         <tbody>
-          <table-row />
+          <tr v-for="(timesheetRow, index) in timesheetRows" :key="index">
+            <td>
+              <input type="checkbox" name="" id="">
+            </td>
+            <td>
+              <select>
+                <option>{{ timesheetRow.project }}</option>
+              </select>
+            </td>
+            <td>
+              <select>
+                <option>{{ timesheetRow.activity }}</option>
+              </select>
+            </td>
+            <td>
+              <input type="text" :value="timesheetRow.hoursPerDay.monday" />
+            </td>
+            <td>
+              <input type="text" :value="timesheetRow.hoursPerDay.tuesday" />
+            </td>
+            <td>
+              <input type="text" :value="timesheetRow.hoursPerDay.wednesday" />
+            </td>
+            <td>
+              <input type="text" :value="timesheetRow.hoursPerDay.thursday" />
+            </td>
+            <td>
+              <input type="text" :value="timesheetRow.hoursPerDay.friday" />
+            </td>
+            <td>
+              <input type="text" :value="timesheetRow.hoursPerDay.saturday" />
+            </td>
+            <td>
+              <input type="text" :value="timesheetRow.hoursPerDay.sunday" />
+            </td>
+          </tr>
         </tbody>
       </table>
       <button>Add row</button>
@@ -41,25 +76,27 @@
 </template>
 
 <script lang="ts">
-import TableRow from "@/components/timesheet/TableRow.vue"; // @ is an alias to /src
 import { decrementDays, formatDateToString, getWeek, incrementDays } from "../utils/datetime";
 import { defineComponent } from "vue";
+import { getTimesheetResponse } from "../service/timesheet";
+import { TimesheetResponse, TimesheetRows } from "../models/timesheetResponse.interface";
+import { AxiosResponse } from "axios";
 
 export default defineComponent({
   name: "Timesheet",
-  components: {
-    TableRow
-  },
   data() {
     return {
       todayDate: new Date(new Date().setHours(0, 0, 0, 1)),
       selectedDate: new Date(0),
-      mondayInSelectedWeek: new Date(0)
+      mondayInSelectedWeek: new Date(0),
+      timesheetRows: [] as TimesheetRows[]
     };
   },
   methods: {
     onDateSelect(event: any): void {
       this.selectedDate = new Date(event.target.value);
+
+      this.getTimesheetRows(getWeek(this.selectedDate));
 
       const selectedDayOfTheWeek =  this.selectedDate.getDay();
       const numberOfDaysToPreviousMonday = selectedDayOfTheWeek === 0 ? 7 : selectedDayOfTheWeek;
@@ -68,7 +105,16 @@ export default defineComponent({
     },
     formatDateToString: formatDateToString,
     getWeek: getWeek,
-    incrementDays: incrementDays
+    incrementDays: incrementDays,
+    getTimesheetRows(week: number) {
+      getTimesheetResponse(week)
+      .then((response: AxiosResponse<TimesheetResponse>) => {
+        this.timesheetRows = response.data.timesheetRows;
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    }
   },
   computed: {
     selectedPeriod(): string {
