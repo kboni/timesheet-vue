@@ -45,13 +45,111 @@
         "fieldType": "msg",
         "format": "json",
         "syntax": "plain",
-        "template": "{\n    \"timesheet_rows\": [\n        {\n            \"project\": \"Some Project\",\n            \"activity\": \"Some activity\",\n            \"hours_per_day\": {\n                \"monday\": \"8:00\",\n                \"tuesday\": \"8:00\",\n                \"wednesday\": \"8:00\",\n                \"thursday\": \"8:00\",\n                \"friday\": \"8:00\"\n            }\n        },\n        {\n            \"project\": \"Some Project 1\",\n            \"activity\": \"Some activity 1\",\n            \"hours_per_day\": {\n                \"monday\": \"8:00\",\n                \"tuesday\": \"8:00\",\n                \"wednesday\": \"8:00\",\n                \"thursday\": \"8:00\",\n                \"friday\": \"8:00\"\n            }\n        }\n    ]\n}",
+        "template": "{\n    \"timesheetRows\": [\n        {\n            \"projectId\": 1,\n            \"activityId\": 1,\n            \"hoursPerDay\": {\n                \"monday\": \"8:00\",\n                \"tuesday\": \"8:00\",\n                \"wednesday\": \"8:00\",\n                \"thursday\": \"8:00\",\n                \"friday\": \"8:00\"\n            }\n        },\n        {\n            \"projectId\": 2,\n            \"activityId\": 3,\n            \"hoursPerDay\": {\n                \"monday\": \"8:00\",\n                \"tuesday\": \"8:00\",\n                \"wednesday\": \"8:00\",\n                \"thursday\": \"8:00\",\n                \"friday\": \"8:00\"\n            }\n        }\n    ]\n}",
         "output": "json",
         "x": 440,
         "y": 200,
         "wires": [
             [
                 "2a9ba1c3.66a8be"
+            ]
+        ]
+    },
+    {
+        "id": "4761b86b.2569d8",
+        "type": "http in",
+        "z": "fce2812f.86741",
+        "name": "GET activity",
+        "url": "/timesheet/activity",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 190,
+        "y": 360,
+        "wires": [
+            [
+                "8764c300.8ef11"
+            ]
+        ]
+    },
+    {
+        "id": "400e5227.cc712c",
+        "type": "http response",
+        "z": "fce2812f.86741",
+        "name": "Success",
+        "statusCode": "200",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "x": 650,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "8764c300.8ef11",
+        "type": "template",
+        "z": "fce2812f.86741",
+        "name": "Activity JSON",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "json",
+        "syntax": "plain",
+        "template": "{\n    \"activities\": [\n        {\n            \"id\": 1,\n            \"name\": \"Some activity\"\n        },\n        {\n            \"id\": 2,\n            \"name\": \"Some activity 1\"\n        },\n        {\n            \"id\": 3,\n            \"name\": \"Some activity 2\"\n        }\n    ]\n}",
+        "output": "json",
+        "x": 440,
+        "y": 360,
+        "wires": [
+            [
+                "400e5227.cc712c"
+            ]
+        ]
+    },
+    {
+        "id": "3b06e333.2b3d1c",
+        "type": "http in",
+        "z": "fce2812f.86741",
+        "name": "GET project",
+        "url": "/timesheet/project",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 190,
+        "y": 500,
+        "wires": [
+            [
+                "e2064c4f.d0fcc"
+            ]
+        ]
+    },
+    {
+        "id": "fed94c21.c79c9",
+        "type": "http response",
+        "z": "fce2812f.86741",
+        "name": "Success",
+        "statusCode": "200",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "x": 650,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "e2064c4f.d0fcc",
+        "type": "template",
+        "z": "fce2812f.86741",
+        "name": "Project JSON",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "json",
+        "syntax": "plain",
+        "template": "{\n    \"projects\": [\n        {\n            \"id\": 1,\n            \"name\": \"Some project\"\n        },\n        {\n            \"id\": 2,\n            \"name\": \"Some project 1\"\n        },\n        {\n            \"id\": 3,\n            \"name\": \"Some project 2\"\n        }\n    ]\n}",
+        "output": "json",
+        "x": 440,
+        "y": 500,
+        "wires": [
+            [
+                "fed94c21.c79c9"
             ]
         ]
     }

@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div>
     <h1>Timesheet</h1>
     <input type="date" @change="onDateSelect($event)" />
     <div v-if="selectedDate > new Date(0)">
@@ -35,12 +35,12 @@
             </td>
             <td>
               <select>
-                <option>{{ timesheetRow.project }}</option>
+                <option>{{ allProjectNames[timesheetRow.projectId] }}</option>
               </select>
             </td>
             <td>
               <select>
-                <option>{{ timesheetRow.activity }}</option>
+                <option>{{ allActivities[timesheetRow.activityId] }}</option>
               </select>
             </td>
             <td>
@@ -78,8 +78,8 @@
 <script lang="ts">
 import { decrementDays, formatDateToString, getWeek, incrementDays } from "../utils/datetime";
 import { defineComponent } from "vue";
-import { getTimesheetResponse } from "../service/timesheet";
-import { TimesheetResponse, TimesheetRow } from "../models/timesheetResponse.interface";
+import { getActivity, getProject, getTimesheetResponse } from "../service/timesheet";
+import { Activity, ActivityAndProject, Project, TimesheetResponse, TimesheetRow } from "../models/timesheetResponse.interface";
 import { AxiosResponse } from "axios";
 
 export default defineComponent({
@@ -90,10 +90,39 @@ export default defineComponent({
       selectedDate: new Date(0),
       mondayInSelectedWeek: new Date(0),
       timesheetRows: [] as TimesheetRow[],
-      originalTimesheetRows: [] as TimesheetRow[]
+      originalTimesheetRows: [] as TimesheetRow[],
+      allActivities: [] as string[],
+      allProjectNames: [] as string[]
     };
   },
+  mounted() {
+    this.getAllActivities();
+    this.getAllProjects();
+  },
   methods: {
+    getAllActivities(): void {
+      getActivity()
+      .then((response: AxiosResponse<Activity>) => {
+        response.data.activity.forEach((el: ActivityAndProject) => {
+          this.allActivities[el.id] = el.name;
+        });
+        console.log()
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    },
+    getAllProjects(): void {
+      getProject()
+      .then((response: AxiosResponse<Project>) => {
+        response.data.project.forEach((el: ActivityAndProject) => {
+          this.allProjectNames[el.id] = el.name;
+        });
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    },
     onDateSelect(event: any): void {
       this.selectedDate = new Date(event.target.value);
 
@@ -119,8 +148,8 @@ export default defineComponent({
     },
     addRow() {
       this.timesheetRows.push({
-        project: '',
-        activity: '',
+        projectId: 0,
+        activityId: 0,
         hoursPerDay: []
       } as TimesheetRow);
     },

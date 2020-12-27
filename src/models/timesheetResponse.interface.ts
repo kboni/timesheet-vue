@@ -3,8 +3,8 @@ export interface TimesheetResponse {
 }
 
 export interface TimesheetRow {
-    project: string,
-    activity: string,
+    projectId: number,
+    activityId: number,
     hoursPerDay: HoursPerDay[]
 }
 
@@ -16,4 +16,17 @@ interface HoursPerDay {
     friday?: string,
     saturday?: string,
     sunday?: string
+}
+
+export interface Activity {
+    activity: ActivityAndProject[]
+}
+
+export interface Project {
+    project: ActivityAndProject[]
+}
+
+export interface ActivityAndProject {
+    id: number,
+    name: string
 }
