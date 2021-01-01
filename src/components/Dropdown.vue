@@ -20,6 +20,6 @@ export default defineComponent({
     selectedId: {
       type: Number
     }
-  },
+  }
 });
 </script>

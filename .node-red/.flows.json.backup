@@ -15,8 +15,8 @@
         "method": "get",
         "upload": false,
         "swaggerDoc": "",
-        "x": 190,
-        "y": 200,
+        "x": 200,
+        "y": 160,
         "wires": [
             [
                 "a5e0e37b.27c72"
@@ -32,8 +32,8 @@
         "headers": {
             "content-type": "application/json"
         },
-        "x": 640,
-        "y": 200,
+        "x": 650,
+        "y": 160,
         "wires": []
     },
     {
@@ -45,10 +45,10 @@
         "fieldType": "msg",
         "format": "json",
         "syntax": "plain",
-        "template": "{\n    \"timesheetRows\": [\n        {\n            \"projectId\": 1,\n            \"activityId\": 1,\n            \"hoursPerDay\": {\n                \"monday\": \"8:00\",\n                \"tuesday\": \"8:00\",\n                \"wednesday\": \"8:00\",\n                \"thursday\": \"8:00\",\n                \"friday\": \"8:00\"\n            }\n        },\n        {\n            \"projectId\": 2,\n            \"activityId\": 3,\n            \"hoursPerDay\": {\n                \"monday\": \"8:00\",\n                \"tuesday\": \"8:00\",\n                \"wednesday\": \"8:00\",\n                \"thursday\": \"8:00\",\n                \"friday\": \"8:00\"\n            }\n        }\n    ]\n}",
+        "template": "{\n    \"timesheetRows\": [\n        {\n            \"id\": 5,\n            \"projectId\": 1,\n            \"activityId\": 1,\n            \"hoursPerDay\": {\n                \"monday\": \"8:00\",\n                \"tuesday\": \"8:00\",\n                \"wednesday\": \"8:00\",\n                \"thursday\": \"8:00\",\n                \"friday\": \"8:00\"\n            }\n        },\n        {\n            \"id\": 6,\n            \"projectId\": 2,\n            \"activityId\": 3,\n            \"hoursPerDay\": {\n                \"monday\": \"8:00\",\n                \"tuesday\": \"8:00\",\n                \"wednesday\": \"8:00\",\n                \"thursday\": \"8:00\",\n                \"friday\": \"8:00\"\n            }\n        }\n    ]\n}",
         "output": "json",
-        "x": 440,
-        "y": 200,
+        "x": 450,
+        "y": 160,
         "wires": [
             [
                 "2a9ba1c3.66a8be"
@@ -94,7 +94,7 @@
         "fieldType": "msg",
         "format": "json",
         "syntax": "plain",
-        "template": "{\n    \"activities\": [\n        {\n            \"id\": 1,\n            \"name\": \"Some activity\"\n        },\n        {\n            \"id\": 2,\n            \"name\": \"Some activity 1\"\n        },\n        {\n            \"id\": 3,\n            \"name\": \"Some activity 2\"\n        }\n    ]\n}",
+        "template": "{\n    \"activity\": [\n        {\n            \"id\": 1,\n            \"name\": \"Some activity\"\n        },\n        {\n            \"id\": 2,\n            \"name\": \"Some activity 1\"\n        },\n        {\n            \"id\": 3,\n            \"name\": \"Some activity 2\"\n        }\n    ]\n}",
         "output": "json",
         "x": 440,
         "y": 360,
@@ -143,13 +143,62 @@
         "fieldType": "msg",
         "format": "json",
         "syntax": "plain",
-        "template": "{\n    \"projects\": [\n        {\n            \"id\": 1,\n            \"name\": \"Some project\"\n        },\n        {\n            \"id\": 2,\n            \"name\": \"Some project 1\"\n        },\n        {\n            \"id\": 3,\n            \"name\": \"Some project 2\"\n        }\n    ]\n}",
+        "template": "{\n    \"project\": [\n        {\n            \"id\": 1,\n            \"name\": \"Some project\"\n        },\n        {\n            \"id\": 2,\n            \"name\": \"Some project 1\"\n        },\n        {\n            \"id\": 3,\n            \"name\": \"Some project 2\"\n        }\n    ]\n}",
         "output": "json",
         "x": 440,
         "y": 500,
         "wires": [
             [
                 "fed94c21.c79c9"
+            ]
+        ]
+    },
+    {
+        "id": "944139a1.9d98d8",
+        "type": "http in",
+        "z": "fce2812f.86741",
+        "name": "DELETE timesheet",
+        "url": "/timesheet",
+        "method": "delete",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 210,
+        "y": 260,
+        "wires": [
+            [
+                "192030b.01858cf"
+            ]
+        ]
+    },
+    {
+        "id": "10d2f32e.b7becd",
+        "type": "http response",
+        "z": "fce2812f.86741",
+        "name": "Success",
+        "statusCode": "200",
+        "headers": {
+            "content-type": "application/json"
+        },
+        "x": 650,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "192030b.01858cf",
+        "type": "template",
+        "z": "fce2812f.86741",
+        "name": "Timesheet JSON",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "json",
+        "syntax": "plain",
+        "template": "{\n    \"timesheetRows\": [\n        {\n            \"id\": 5,\n            \"projectId\": 1,\n            \"activityId\": 1,\n            \"hoursPerDay\": {\n                \"monday\": \"8:00\",\n                \"tuesday\": \"8:00\",\n                \"wednesday\": \"8:00\",\n                \"thursday\": \"8:00\",\n                \"friday\": \"8:00\"\n            }\n        }\n    ]\n}",
+        "output": "json",
+        "x": 450,
+        "y": 260,
+        "wires": [
+            [
+                "10d2f32e.b7becd"
             ]
         ]
     }

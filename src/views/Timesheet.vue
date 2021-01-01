@@ -31,13 +31,13 @@
         <tbody>
           <tr v-for="(timesheetRow, index) in timesheetRows" :key="index">
             <td>
-              <input type="checkbox" name="" id="" />
+              <input type="checkbox" :value="timesheetRow.id" v-model="checkedTimesheetRows" />
             </td>
             <td>
               <Dropdown :data="allProjectNames" :selectedId="timesheetRow.projectId" />
             </td>
             <td>
-              <Dropdown :data="allActivities" :selectedId="timesheetRow.activityId"/>
+              <Dropdown :data="allActivities" :selectedId="timesheetRow.activityId" />
             </td>
             <td>
               <input type="text" :value="timesheetRow.hoursPerDay.monday" />
@@ -64,9 +64,12 @@
         </tbody>
       </table>
       <button @click="addRow">Add row</button>
-      <button>Delete selected row(s)</button>
+      <button @click="ondDeleteSelectedTimesheetRows">Delete selected row(s)</button>
       <button>Save</button>
       <button @click="resetRows">Reset to last saved</button>
+      <br />
+      <button>Export week</button>
+      <button>Export month</button>
     </div>
   </div>
 </template>
@@ -78,7 +81,7 @@ import {
   getWeek,
   incrementDays,
 } from "../utils/datetime";
-import { getActivity, getProject, getTimesheetResponse } from "../service/timesheet";
+import { deleteTimesheetRow, getActivity, getProject, getTimesheetResponse } from "../service/timesheet";
 import {
   Activity,
   ActivityAndProject,
@@ -87,7 +90,7 @@ import {
   TimesheetRow,
 } from "../models/timesheetResponse.interface";
 import { AxiosResponse } from "axios";
-import { defineComponent } from "vue";
+import { defineComponent, InputHTMLAttributes } from "vue";
 import Dropdown from "../components/Dropdown.vue";
 
 export default defineComponent({
@@ -104,6 +107,7 @@ export default defineComponent({
       originalTimesheetRows: [] as TimesheetRow[],
       allActivities: [] as ActivityAndProject[],
       allProjectNames: [] as ActivityAndProject[],
+      checkedTimesheetRows: [] as InputHTMLAttributes[]
     };
   },
   mounted() {
@@ -114,10 +118,10 @@ export default defineComponent({
     getAllActivities(): void {
       getActivity()
         .then((response: AxiosResponse<Activity>) => {
-            this.allActivities = response.data.activity;
+          this.allActivities = response.data.activity;
         })
         .catch((err) => {
-          console.log(err);
+          console.error(err);
         });
     },
     getAllProjects(): void {
@@ -126,8 +130,23 @@ export default defineComponent({
           this.allProjectNames = response.data.project;
         })
         .catch((err) => {
-          console.log(err);
+          console.error(err);
         });
+    },
+    ondDeleteSelectedTimesheetRows(): void {
+      console.log(this.checkedTimesheetRows)
+      let timesheetId: number;
+      const deletePromises: Promise<AxiosResponse<TimesheetResponse>>[] = [];
+
+      this.checkedTimesheetRows.forEach((checkbox: InputHTMLAttributes) => {
+        timesheetId = Number(checkbox.value);
+        deletePromises.push(deleteTimesheetRow(timesheetId));
+      });
+      Promise.all(deletePromises)
+      .then(() => {
+        this.getTimesheetRows(getWeek(this.selectedDate));
+        this.checkedTimesheetRows = [];
+      })
     },
     onDateSelect(event: any): void {
       this.selectedDate = new Date(event.target.value);
@@ -158,6 +177,7 @@ export default defineComponent({
     },
     addRow() {
       this.timesheetRows.push({
+        id: 0,
         projectId: 0,
         activityId: 0,
         hoursPerDay: [],

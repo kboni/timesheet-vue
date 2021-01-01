@@ -3,6 +3,7 @@ export interface TimesheetResponse {
 }
 
 export interface TimesheetRow {
+    id: number,
     projectId: number,
     activityId: number,
     hoursPerDay: HoursPerDay
