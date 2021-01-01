@@ -31,17 +31,13 @@
         <tbody>
           <tr v-for="(timesheetRow, index) in timesheetRows" :key="index">
             <td>
-              <input type="checkbox" name="" id="">
+              <input type="checkbox" name="" id="" />
             </td>
             <td>
-              <select>
-                <option>{{ allProjectNames[timesheetRow.projectId] }}</option>
-              </select>
+              <Dropdown :data="allProjectNames" :selectedId="timesheetRow.projectId" />
             </td>
             <td>
-              <select>
-                <option>{{ allActivities[timesheetRow.activityId] }}</option>
-              </select>
+              <Dropdown :data="allActivities" :selectedId="timesheetRow.activityId"/>
             </td>
             <td>
               <input type="text" :value="timesheetRow.hoursPerDay.monday" />
@@ -76,14 +72,29 @@
 </template>
 
 <script lang="ts">
-import { decrementDays, formatDateToString, getWeek, incrementDays } from "../utils/datetime";
-import { defineComponent } from "vue";
+import {
+  decrementDays,
+  formatDateToString,
+  getWeek,
+  incrementDays,
+} from "../utils/datetime";
 import { getActivity, getProject, getTimesheetResponse } from "../service/timesheet";
-import { Activity, ActivityAndProject, Project, TimesheetResponse, TimesheetRow } from "../models/timesheetResponse.interface";
+import {
+  Activity,
+  ActivityAndProject,
+  Project,
+  TimesheetResponse,
+  TimesheetRow,
+} from "../models/timesheetResponse.interface";
 import { AxiosResponse } from "axios";
+import { defineComponent } from "vue";
+import Dropdown from "../components/Dropdown.vue";
 
 export default defineComponent({
   name: "Timesheet",
+  components: {
+    Dropdown,
+  },
   data() {
     return {
       todayDate: new Date(new Date().setHours(0, 0, 0, 1)),
@@ -91,8 +102,8 @@ export default defineComponent({
       mondayInSelectedWeek: new Date(0),
       timesheetRows: [] as TimesheetRow[],
       originalTimesheetRows: [] as TimesheetRow[],
-      allActivities: [] as string[],
-      allProjectNames: [] as string[]
+      allActivities: [] as ActivityAndProject[],
+      allProjectNames: [] as ActivityAndProject[],
     };
   },
   mounted() {
@@ -102,67 +113,70 @@ export default defineComponent({
   methods: {
     getAllActivities(): void {
       getActivity()
-      .then((response: AxiosResponse<Activity>) => {
-        response.data.activity.forEach((el: ActivityAndProject) => {
-          this.allActivities[el.id] = el.name;
+        .then((response: AxiosResponse<Activity>) => {
+            this.allActivities = response.data.activity;
+        })
+        .catch((err) => {
+          console.log(err);
         });
-        console.log()
-      })
-      .catch((err) => {
-        console.log(err)
-      })
     },
     getAllProjects(): void {
       getProject()
-      .then((response: AxiosResponse<Project>) => {
-        response.data.project.forEach((el: ActivityAndProject) => {
-          this.allProjectNames[el.id] = el.name;
+        .then((response: AxiosResponse<Project>) => {
+          this.allProjectNames = response.data.project;
+        })
+        .catch((err) => {
+          console.log(err);
         });
-      })
-      .catch((err) => {
-        console.log(err)
-      })
     },
     onDateSelect(event: any): void {
       this.selectedDate = new Date(event.target.value);
 
       this.getTimesheetRows(getWeek(this.selectedDate));
 
-      const selectedDayOfTheWeek =  this.selectedDate.getDay();
-      const numberOfDaysToPreviousMonday = selectedDayOfTheWeek === 0 ? 7 : selectedDayOfTheWeek;
+      const selectedDayOfTheWeek = this.selectedDate.getDay();
+      const numberOfDaysToPreviousMonday =
+        selectedDayOfTheWeek === 0 ? 7 : selectedDayOfTheWeek;
 
-      this.mondayInSelectedWeek = decrementDays(this.selectedDate, numberOfDaysToPreviousMonday - 1);
+      this.mondayInSelectedWeek = decrementDays(
+        this.selectedDate,
+        numberOfDaysToPreviousMonday - 1
+      );
     },
     formatDateToString: formatDateToString,
     getWeek: getWeek,
     incrementDays: incrementDays,
     getTimesheetRows(week: number) {
       getTimesheetResponse(week)
-      .then((response: AxiosResponse<TimesheetResponse>) => {
-        this.timesheetRows = response.data.timesheetRows;
-        this.originalTimesheetRows = JSON.parse(JSON.stringify(this.timesheetRows));
-      })
-      .catch((err) => {
-        console.log(err)
-      })
+        .then((response: AxiosResponse<TimesheetResponse>) => {
+          this.timesheetRows = response.data.timesheetRows;
+          this.originalTimesheetRows = JSON.parse(JSON.stringify(this.timesheetRows));
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
     addRow() {
       this.timesheetRows.push({
         projectId: 0,
         activityId: 0,
-        hoursPerDay: []
+        hoursPerDay: [],
       } as TimesheetRow);
     },
     resetRows() {
       this.timesheetRows = JSON.parse(JSON.stringify(this.originalTimesheetRows));
-    }
+    },
   },
   computed: {
     selectedPeriod(): string {
       const sundayInSelectedWeek = incrementDays(this.mondayInSelectedWeek, 6);
 
-      return formatDateToString(this.mondayInSelectedWeek) + ' - ' + formatDateToString(sundayInSelectedWeek);
-    }
-  }
-})
+      return (
+        formatDateToString(this.mondayInSelectedWeek) +
+        " - " +
+        formatDateToString(sundayInSelectedWeek)
+      );
+    },
+  },
+});
 </script>

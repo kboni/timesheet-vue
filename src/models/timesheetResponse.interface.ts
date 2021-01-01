@@ -5,7 +5,7 @@ export interface TimesheetResponse {
 export interface TimesheetRow {
     projectId: number,
     activityId: number,
-    hoursPerDay: HoursPerDay[]
+    hoursPerDay: HoursPerDay
 }
 
 interface HoursPerDay {
