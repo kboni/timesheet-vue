@@ -8,7 +8,7 @@
       <table>
         <thead>
           <tr>
-            <th><input type="checkbox" name="" id="" disabled /></th>
+            <th><input type="checkbox"  disabled /></th>
             <th>Project name</th>
             <th>Activity name</th>
             <th>Monday</th>
@@ -34,38 +34,66 @@
               <input type="checkbox" :value="timesheetRow.id" v-model="checkedTimesheetRows" />
             </td>
             <td>
-              <Dropdown :data="allProjectNames" :selectedId="timesheetRow.projectId" />
+              <dropdown :options="allProjectNames" :initSelectedId="timesheetRow.projectId" v-model="timesheetRow.projectId" />
             </td>
             <td>
-              <Dropdown :data="allActivities" :selectedId="timesheetRow.activityId" />
+              <dropdown :options="allActivities" :initSelectedId="timesheetRow.activityId" v-model="timesheetRow.activityId" />
             </td>
             <td>
-              <input type="text" :value="timesheetRow.hoursPerDay.monday" />
+              <weekday-text-input v-model="timesheetRow.hoursPerDay.monday" />
             </td>
             <td>
-              <input type="text" :value="timesheetRow.hoursPerDay.tuesday" />
+              <weekday-text-input v-model="timesheetRow.hoursPerDay.tuesday" />
             </td>
             <td>
-              <input type="text" :value="timesheetRow.hoursPerDay.wednesday" />
+              <weekday-text-input v-model="timesheetRow.hoursPerDay.wednesday" />
             </td>
             <td>
-              <input type="text" :value="timesheetRow.hoursPerDay.thursday" />
+              <weekday-text-input v-model="timesheetRow.hoursPerDay.thursday" />
             </td>
             <td>
-              <input type="text" :value="timesheetRow.hoursPerDay.friday" />
+              <weekday-text-input v-model="timesheetRow.hoursPerDay.friday" />
             </td>
             <td>
-              <input type="text" :value="timesheetRow.hoursPerDay.saturday" />
+              <weekday-text-input v-model="timesheetRow.hoursPerDay.saturday" />
             </td>
             <td>
-              <input type="text" :value="timesheetRow.hoursPerDay.sunday" />
+              <weekday-text-input v-model="timesheetRow.hoursPerDay.sunday" />
             </td>
           </tr>
         </tbody>
+        <tfoot>
+          <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td>
+              <total-hours :timesheetRows="timesheetRows" :day="dayEnum.MONDAY" />
+            </td>
+            <td>
+              <total-hours :timesheetRows="timesheetRows" :day="dayEnum.TUESDAY" />
+            </td>
+            <td>
+              <total-hours :timesheetRows="timesheetRows" :day="dayEnum.WEDNESDAY" />
+            </td>
+            <td>
+              <total-hours :timesheetRows="timesheetRows" :day="dayEnum.THURSDAY" />
+            </td>
+            <td>
+              <total-hours :timesheetRows="timesheetRows" :day="dayEnum.FRIDAY" />
+            </td>
+            <td>
+              <total-hours :timesheetRows="timesheetRows" :day="dayEnum.SATURDAY" />
+            </td>
+            <td>
+              <total-hours :timesheetRows="timesheetRows" :day="dayEnum.SUNDAY" />
+            </td>
+          </tr>
+        </tfoot>
       </table>
       <button @click="addRow">Add row</button>
       <button @click="ondDeleteSelectedTimesheetRows">Delete selected row(s)</button>
-      <button>Save</button>
+      <button @click="onSaveTimesheet">Save</button>
       <button @click="resetRows">Reset to last saved</button>
       <br />
       <button>Export week</button>
@@ -81,33 +109,40 @@ import {
   getWeek,
   incrementDays,
 } from "../utils/datetime";
-import { deleteTimesheetRow, getActivity, getProject, getTimesheetResponse } from "../service/timesheet";
+import { deleteTimesheetRow, getActivity, getProject, getTimesheetResponse, insertTimesheetRow, updateTimesheet } from "../service/timesheet";
 import {
   Activity,
   ActivityAndProject,
   Project,
   TimesheetResponse,
   TimesheetRow,
+  HoursPerDay
 } from "../models/timesheetResponse.interface";
 import { AxiosResponse } from "axios";
 import { defineComponent, InputHTMLAttributes } from "vue";
 import Dropdown from "../components/Dropdown.vue";
+import WeekdayTextInput from "../components/WeekdayTextInput.vue";
+import TotalHours from "../components/TotalHours.vue";
+import { Day } from "@/enums/day.enum";
 
 export default defineComponent({
   name: "Timesheet",
   components: {
     Dropdown,
+    WeekdayTextInput,
+    TotalHours
   },
   data() {
     return {
       todayDate: new Date(new Date().setHours(0, 0, 0, 1)),
       selectedDate: new Date(0),
+      selectedWeek: 0,
       mondayInSelectedWeek: new Date(0),
       timesheetRows: [] as TimesheetRow[],
-      originalTimesheetRows: [] as TimesheetRow[],
       allActivities: [] as ActivityAndProject[],
       allProjectNames: [] as ActivityAndProject[],
-      checkedTimesheetRows: [] as InputHTMLAttributes[]
+      checkedTimesheetRows: [] as InputHTMLAttributes[],
+      dayEnum: Day
     };
   },
   mounted() {
@@ -134,7 +169,6 @@ export default defineComponent({
         });
     },
     ondDeleteSelectedTimesheetRows(): void {
-      console.log(this.checkedTimesheetRows)
       let timesheetId: number;
       const deletePromises: Promise<AxiosResponse<TimesheetResponse>>[] = [];
 
@@ -144,14 +178,23 @@ export default defineComponent({
       });
       Promise.all(deletePromises)
       .then(() => {
-        this.getTimesheetRows(getWeek(this.selectedDate));
+        this.getTimesheetRows(this.selectedWeek);
         this.checkedTimesheetRows = [];
       })
     },
+    onSaveTimesheet(): void {
+      updateTimesheet(this.timesheetRows)
+      .then(() => {
+        console.log('Success update');
+      })
+      .catch((err) => {
+          console.error(err);
+        });
+    },
     onDateSelect(event: any): void {
       this.selectedDate = new Date(event.target.value);
-
-      this.getTimesheetRows(getWeek(this.selectedDate));
+      this.selectedWeek = getWeek(this.selectedDate);
+      this.getTimesheetRows(this.selectedWeek);
 
       const selectedDayOfTheWeek = this.selectedDate.getDay();
       const numberOfDaysToPreviousMonday =
@@ -169,22 +212,25 @@ export default defineComponent({
       getTimesheetResponse(week)
         .then((response: AxiosResponse<TimesheetResponse>) => {
           this.timesheetRows = response.data.timesheetRows;
-          this.originalTimesheetRows = JSON.parse(JSON.stringify(this.timesheetRows));
         })
         .catch((err) => {
           console.log(err);
         });
     },
     addRow() {
-      this.timesheetRows.push({
-        id: 0,
-        projectId: 0,
-        activityId: 0,
-        hoursPerDay: [],
-      } as TimesheetRow);
+      const selectedWeek = this.selectedWeek;
+      insertTimesheetRow(selectedWeek)
+        .then(() => {
+          this.getTimesheetRows(selectedWeek);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
     resetRows() {
-      this.timesheetRows = JSON.parse(JSON.stringify(this.originalTimesheetRows));
+      this.getTimesheetRows(this.selectedWeek);
+      this.getAllActivities();
+      this.getAllProjects();
     },
   },
   computed: {

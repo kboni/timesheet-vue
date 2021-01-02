@@ -45,7 +45,7 @@
         "fieldType": "msg",
         "format": "json",
         "syntax": "plain",
-        "template": "{\n    \"timesheetRows\": [\n        {\n            \"id\": 5,\n            \"projectId\": 1,\n            \"activityId\": 1,\n            \"hoursPerDay\": {\n                \"monday\": \"8:00\",\n                \"tuesday\": \"8:00\",\n                \"wednesday\": \"8:00\",\n                \"thursday\": \"8:00\",\n                \"friday\": \"8:00\"\n            }\n        },\n        {\n            \"id\": 6,\n            \"projectId\": 2,\n            \"activityId\": 3,\n            \"hoursPerDay\": {\n                \"monday\": \"8:00\",\n                \"tuesday\": \"8:00\",\n                \"wednesday\": \"8:00\",\n                \"thursday\": \"8:00\",\n                \"friday\": \"8:00\"\n            }\n        }\n    ]\n}",
+        "template": "{\n    \"timesheetRows\": [\n        {\n            \"id\": 5,\n            \"projectId\": 1,\n            \"activityId\": 1,\n            \"hoursPerDay\": {\n                \"monday\": \"08:00\",\n                \"tuesday\": \"08:00\",\n                \"wednesday\": \"08:00\",\n                \"thursday\": \"08:00\",\n                \"friday\": \"08:00\",\n                \"saturday\": \"00:00\",\n                \"sunday\": \"00:00\"\n            }\n        },\n        {\n            \"id\": 6,\n            \"projectId\": 2,\n            \"activityId\": 3,\n            \"hoursPerDay\": {\n                \"monday\": \"08:00\",\n                \"tuesday\": \"08:00\",\n                \"wednesday\": \"08:00\",\n                \"thursday\": \"08:00\",\n                \"friday\": \"08:00\",\n                \"saturday\": \"00:00\",\n                \"sunday\": \"00:00\"\n            }\n        }\n    ]\n}",
         "output": "json",
         "x": 450,
         "y": 160,
@@ -175,7 +175,7 @@
         "type": "http response",
         "z": "fce2812f.86741",
         "name": "Success",
-        "statusCode": "200",
+        "statusCode": "204",
         "headers": {
             "content-type": "application/json"
         },

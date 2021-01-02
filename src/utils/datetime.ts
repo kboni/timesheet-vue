@@ -24,3 +24,45 @@ export function decrementDays(currentDate: Date, decrementBy: number): Date {
     newDate.setDate(currentDate.getDate() - decrementBy);
     return newDate;
 }
+
+// export function sumTime(time1: string, time2: string): string {
+//     const time1Parts = time1.split(':');
+//     const time2Parts = time2.split(':');
+
+//     const time1Hours = Number(time1Parts[0])
+//     const time2Hours = Number(time2Parts[0])
+
+//     const time1Minutes = Number(time1Parts[1])
+//     const time2Minutes = Number(time2Parts[1])
+
+//     const time1ToSeconds = (time1Minutes * 60) + (time1Hours * 60 * 60);
+//     const time2ToSeconds = (time2Minutes * 60) + (time2Hours * 60 * 60);
+
+//     let timeSumInSeconds = time1ToSeconds + time2ToSeconds
+//     const timeSumHours = Math.floor(timeSumInSeconds / 3600);
+//     timeSumInSeconds %= 3600;
+//     const timeSumMinutes = Math.floor(timeSumInSeconds / 60);
+
+//     return `${timeSumHours}:${timeSumMinutes}`
+// }
+
+export function timeStringtoSeconds(time: string): number {
+    const timeParts = time.split(':');
+
+    const timeHours = Number(timeParts[0])
+
+    const timeMinutes = Number(timeParts[1])
+
+    return (timeMinutes * 60) + (timeHours * 60 * 60);
+}
+
+export function secondsToTimeString(seconds: number): string {
+    const timeSumHours = Math.floor(seconds / 3600);
+    const timeSumHoursString = timeSumHours < 10 ? `0${timeSumHours}` : `${timeSumHours}`
+
+    seconds %= 3600;
+    const timeSumMinutes = Math.floor(seconds / 60);
+    const timeSumMinutesString = timeSumMinutes < 10 ? `0${timeSumMinutes}` : `${timeSumMinutes}`
+
+    return `${timeSumHoursString}:${timeSumMinutesString}`
+}

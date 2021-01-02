@@ -14,14 +14,14 @@ export function getProject(id?: number): Promise<AxiosResponse<Project>> {
     return api.get<Project>('/timesheet/project' + (id ? `?id=${id}` : ''));
 }
 
-export function insertTimesheet(bodyData: object): Promise<AxiosResponse<TimesheetResponse>> {
-    return api.post<TimesheetResponse>('/timesheet', bodyData);
+export function insertTimesheetRow(week: number, bodyData?: object): Promise<AxiosResponse<TimesheetResponse>> {
+    return api.post<TimesheetResponse>(`/timesheet?week=${week}`, bodyData);
 }
 
 export function updateTimesheet(bodyData: object): Promise<AxiosResponse<TimesheetResponse>> {
     return api.put<TimesheetResponse>('/timesheet', bodyData);
 }
 
-export function deleteTimesheetRow(id: string | number | string[] | undefined): Promise<AxiosResponse<TimesheetResponse>> {
+export function deleteTimesheetRow(id: number): Promise<AxiosResponse<TimesheetResponse>> {
     return api.delete<TimesheetResponse>(`/timesheet?id=${id}`);
 }
